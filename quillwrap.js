@@ -1,30 +1,34 @@
 /**
- * Little helper for converting textareas into Quill-powered editors. Use the 
- * autoinit() method to automatically convert textareas with class "rte" into 
- * quill editors. 
- * 
- * Notes. The original textarea is hidden, but updated. So you should be able to 
- * submit the form without having to perform any extra steps.
- * 
+ * Little helper for converting textareas into Quill-powered editors. Use the
+ * autoinit() method to automatically convert textareas with class "rte" into
+ * quill editors.
+ *
+ * Notes. The original textarea is hidden, but updated. So you should be able to
+ * submit the form without having to perform any extra steps
+ *
  * by Luke (medialight.com.au)
- * 
+ *
  * @param {type} $
+ * @param {type} Mustache
  * @returns {quillwrap}
  */
-define(['jquery'], function ($) {
+/*global define */
+/*global require:false */
+
+define(["jquery"], function ($) {
 
     var quillwrap = {
         /**
-         * Use the autoInit function to automatically convert textareas with 
-         * class "rte" into quill editors.  This basically looks for all the  
-         * textareas with class "rte" and hides them, adding a special div for 
+         * Use the autoInit function to automatically convert textareas with
+         * class "rte" into quill editors.  This basically looks for all the
+         * textareas with class "rte" and hides them, adding a special div for
          * the Quill Editor
-         * 
+         *
          * @returns {undefined}
          */
         autoinit: function () {
             var me = this;
-            require(['quill'], function (Quill) {
+            require(["quill"], function (Quill) {
                 $('textarea.rte').each(function (idx) {
                     var $inpt, id, conf, quillInstance;
                     $inpt = $(this);
@@ -38,8 +42,9 @@ define(['jquery'], function ($) {
                         quillInstance.on('selection-change', function (range, oldRange, source) {
                             if (range === null && oldRange !== null) {
                                 conf.container.removeClass('focussed');
-                            } else if (range !== null && oldRange === null)
+                            } else if (range !== null && oldRange === null) {
                                 conf.container.addClass('focussed');
+                            }
                             $inpt.val(quillInstance.root.innerHTML).trigger('change');
                         });
                         quillInstance.on('text-change', function () {
@@ -63,8 +68,8 @@ define(['jquery'], function ($) {
             });
         },
         /**
-         * Create a container for Quill, returning a config object 
-         * 
+         * Create a container for Quill, returning a config object
+         *
          * @param {type} $inpt
          * @returns {quillwrapL#15.quillwrap.setupInput.quillwrapAnonym$10}
          */
