@@ -14,10 +14,21 @@
  */
 /*global define */
 /*global require:false */
+(function (root, factory) {
+    "use strict";
+    if (typeof module !== 'undefined' && module.exports) {
+        // CommonJS module is defined  (needs testing!)
+        module.exports = factory(require("jquery")(root), require("quill"));
+    } else if (typeof define === "function" && define.amd) {
+        // AMD module is defined... Register as an anonymous AMD module:
+        define(["jquery", "quill"], factory);
+    } else {
+        root.quillwrap = factory(root.jQuery, root.Quill);
+    }
 
-define(["jquery"], function ($) {
+}(this, function ($, Quill) {
 
-    var quillwrap = {
+    return {
         /**
          * Use the autoInit function to automatically convert textareas with
          * class "rte" into quill editors.  This basically looks for all the
@@ -28,44 +39,45 @@ define(["jquery"], function ($) {
          */
         autoinit: function () {
             var me = this;
-            require(["quill"], function (Quill) {
-                $('textarea.rte').each(function (idx) {
-                    var $inpt, id, conf, quillInstance;
-                    $inpt = $(this);
-                    id = $inpt.attr('id');
-                    if (!id) {
-                        console.warn('Cannot autoinit Quill editor for textarea - the textarea needs an id');
-                    } else {
-                        conf = me.setupInput($inpt);
-                        // instantiate Quill
-                        quillInstance = new Quill('#' + conf.id, conf.quillConfig);
-                        quillInstance.on('selection-change', function (range, oldRange, source) {
-                            if (range === null && oldRange !== null) {
-                                conf.container.removeClass('focussed');
-                            } else if (range !== null && oldRange === null) {
-                                conf.container.addClass('focussed');
-                            }
-                            $inpt.val(quillInstance.root.innerHTML).trigger('change');
-                        });
-                        quillInstance.on('text-change', function () {
-                            $inpt.val(quillInstance.root.innerHTML).trigger("change"); // .trigger('change input');   // ths no work :(
-                        });
-                        $inpt.data('editor', {
-                            instance: quillInstance,
-                            flush: function () {
-                                var updatedContent = this.instance.root.innerHTML;
-                                $inpt.val(updatedContent).trigger('change');
-                            },
-                            destroy: function () {
-                                conf.container.remove();
-                                $inpt.show();
-                            }
-                        });
-                        //toggle classes to indicated this textarea is 'active'
-                        $inpt.toggleClass('rte rte-active');
-                    }
-                });
+
+            //require(["quill"], function (Quill) {
+            $('textarea.rte').each(function (idx) {
+                var $inpt, id, conf, quillInstance;
+                $inpt = $(this);
+                id = $inpt.attr('id');
+                if (!id) {
+                    console.warn('Cannot autoinit Quill editor for textarea - the textarea needs an id');
+                } else {
+                    conf = me.setupInput($inpt);
+                    // instantiate Quill
+                    quillInstance = new Quill('#' + conf.id, conf.quillConfig);
+                    quillInstance.on('selection-change', function (range, oldRange, source) {
+                        if (range === null && oldRange !== null) {
+                            conf.container.removeClass('focussed');
+                        } else if (range !== null && oldRange === null) {
+                            conf.container.addClass('focussed');
+                        }
+                        $inpt.val(quillInstance.root.innerHTML).trigger('change');
+                    });
+                    quillInstance.on('text-change', function () {
+                        $inpt.val(quillInstance.root.innerHTML).trigger("change"); // .trigger('change input');   // ths no work :(
+                    });
+                    $inpt.data('editor', {
+                        instance: quillInstance,
+                        flush: function () {
+                            var updatedContent = this.instance.root.innerHTML;
+                            $inpt.val(updatedContent).trigger('change');
+                        },
+                        destroy: function () {
+                            conf.container.remove();
+                            $inpt.show();
+                        }
+                    });
+                    //toggle classes to indicated this textarea is 'active'
+                    $inpt.toggleClass('rte rte-active');
+                }
             });
+            //});
         },
         /**
          * Create a container for Quill, returning a config object
@@ -127,5 +139,4 @@ define(["jquery"], function ($) {
             });
         }
     };
-    return quillwrap;
-});
+}));
