@@ -3,7 +3,7 @@ A simple module for for converting textareas into Quill-powered editors.
 
 Example use
 
-```javascript
+```html
 <script src="jquery.js"></script>
 <script src="quill.js"></script>
 <script src="quillwrap.js"></script>
