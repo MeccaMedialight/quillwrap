@@ -8,9 +8,9 @@ Example use
 <script src="quill.js"></script>
 <script src="quillwrap.js"></script>
 <script>
-	$(document).ready(function () {
-		quillwrap.autoinit();
-	});
+$(document).ready(function () {
+    quillwrap.autoinit();
+});
 </script>
 ```
 
