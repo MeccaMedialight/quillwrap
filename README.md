@@ -4,6 +4,19 @@ A simple module for for converting textareas into Quill-powered editors.
 Example use
 
 ```javascript
+<script src="jquery.js"></script>
+<script src="quill.js"></script>
+<script src="quillwrap.js"></script>
+<script>
+	$(document).ready(function () {
+		quillwrap.autoinit();
+	});
+</script>
+```
+
+Or if you are using AMD modules...
+
+```javascript
 var quillWrap = require('quillwrap');
 quillWrap.autoinit();
 ```
