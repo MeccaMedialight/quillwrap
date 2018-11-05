@@ -16,27 +16,43 @@
         // CommonJS module is defined  (needs testing!)
         module.exports = factory(require("jquery")(root), require("quill"));
     } else if (typeof define === "function" && define.amd) {
-        // AMD module is defined... Register as an anonymous AMD module:
+        // AMD module is defined
+        // Register as an anonymous AMD module:
         define(["jquery", "quill"], factory);
+
     } else {
+        // 
         root.quillwrap = factory(root.jQuery, root.Quill);
     }
 
 }(this, function ($, Quill) {
 
     return {
+        defaultConfig: {
+            modules: {
+                toolbar: [
+                    ['bold', 'italic'],
+                    ['link', 'blockquote', 'code-block'],
+                    [{list: 'ordered'}, {list: 'bullet'}]
+                ]
+            },
+            theme: 'snow' //scrollingContainer: id,
+        },
         /**
          * Use the autoInit function to automatically convert textareas with
          * class "rte" into quill editors.  This basically looks for all the
          * textareas with class "rte" and hides them, adding a special div for
          * the Quill Editor
-         *
+         * 
+         * @param {object} defaultConfig optional
          * @returns {undefined}
          */
-        autoinit: function () {
+        autoinit: function (defaultConfig) {
             var me = this;
+            if (defaultConfig) {
+                $.extend(this.defaultConfig, defaultConfig);
+            }
 
-            //require(["quill"], function (Quill) {
             $('textarea.rte').each(function (idx) {
                 var $inpt, id, conf, quillInstance;
                 $inpt = $(this);
@@ -44,36 +60,43 @@
                 if (!id) {
                     console.warn('Cannot autoinit Quill editor for textarea - the textarea needs an id');
                 } else {
-                    conf = me.setupInput($inpt);
-                    // instantiate Quill
-                    quillInstance = new Quill('#' + conf.id, conf.quillConfig);
-                    quillInstance.on('selection-change', function (range, oldRange, source) {
-                        if (range === null && oldRange !== null) {
-                            conf.container.removeClass('focussed');
-                        } else if (range !== null && oldRange === null) {
-                            conf.container.addClass('focussed');
-                        }
-                        $inpt.val(quillInstance.root.innerHTML).trigger('change');
-                    });
-                    quillInstance.on('text-change', function () {
-                        $inpt.val(quillInstance.root.innerHTML).trigger("change"); // .trigger('change input');   // ths no work :(
-                    });
-                    $inpt.data('editor', {
-                        instance: quillInstance,
-                        flush: function () {
-                            var updatedContent = this.instance.root.innerHTML;
-                            $inpt.val(updatedContent).trigger('change');
-                        },
-                        destroy: function () {
-                            conf.container.remove();
-                            $inpt.show();
-                        }
-                    });
+                    me.init($inpt);
                     //toggle classes to indicated this textarea is 'active'
                     $inpt.toggleClass('rte rte-active');
                 }
             });
-            //});
+        },
+        /**
+         * Initialise a speific input
+         * @param {type} $inpt
+         * @returns {undefined}
+         */
+        init: function ($inpt, configOver) {
+            conf = this._setupInput($inpt, configOver);
+            // instantiate Quill
+            quillInstance = new Quill('#' + conf.id, conf.quillConfig);
+            quillInstance.on('selection-change', function (range, oldRange, source) {
+                if (range === null && oldRange !== null) {
+                    conf.container.removeClass('focussed');
+                } else if (range !== null && oldRange === null) {
+                    conf.container.addClass('focussed');
+                }
+                $inpt.val(quillInstance.root.innerHTML).trigger('change');
+            });
+            quillInstance.on('text-change', function () {
+                $inpt.val(quillInstance.root.innerHTML).trigger("change"); // .trigger('change input');   // ths no work :(
+            });
+            $inpt.data('editor', {
+                instance: quillInstance,
+                flush: function () {
+                    var updatedContent = this.instance.root.innerHTML;
+                    $inpt.val(updatedContent).trigger('change');
+                },
+                destroy: function () {
+                    conf.container.remove();
+                    $inpt.show();
+                }
+            });
         },
         /**
          * Create a container for Quill, returning a config object
@@ -81,7 +104,8 @@
          * @param {type} $inpt
          * @returns {quillwrapL#15.quillwrap.setupInput.quillwrapAnonym$10}
          */
-        setupInput: function ($inpt) {
+        _setupInput: function ($inpt, conf) {
+            debugger;
             var h = $inpt.height(),
                     id = $inpt.attr('id') + '_rte',
                     ph = $inpt.attr('placeholder'),
@@ -96,16 +120,8 @@
             $i.appendTo($container.insertAfter($inpt.hide()));
 
             // create config for the editor
-            var quillConfig = {
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic'],
-                        ['link', 'blockquote', 'code-block'],
-                        [{list: 'ordered'}, {list: 'bullet'}]
-                    ]
-                },
-                theme: 'snow' //scrollingContainer: id,
-            };
+            var newConig = {};
+            quillConfig = $.extend(newConig, this.defaultConfig, conf);
             if (ph) { // copy the placeholder over
                 quillConfig.placeholder = ph;
             }
