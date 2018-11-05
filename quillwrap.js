@@ -7,10 +7,6 @@
  * submit the form without having to perform any extra steps
  *
  * by Luke (medialight.com.au)
- *
- * @param {type} $
- * @param {type} Mustache
- * @returns {quillwrap}
  */
 /*global define */
 /*global require:false */
