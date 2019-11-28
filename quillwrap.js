@@ -105,7 +105,6 @@
          * @returns {quillwrapL#15.quillwrap.setupInput.quillwrapAnonym$10}
          */
         _setupInput: function ($inpt, conf) {
-            debugger;
             var h = $inpt.height(),
                     id = $inpt.attr('id') + '_rte',
                     ph = $inpt.attr('placeholder'),
