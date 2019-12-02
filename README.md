@@ -1,5 +1,5 @@
 # quillwrap
-A simple module for for converting textareas into Quill-powered editors. 
+A simple module for for converting textareas into Quill-powered editors.  
 
 Example use
 
